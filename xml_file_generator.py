@@ -15,8 +15,6 @@ import xml.etree.ElementTree as xml
 import os
 import shutil
 
-
-
 def createXMLFile(df):
   '''
   function generates xml file
@@ -25,6 +23,7 @@ def createXMLFile(df):
   os.mkdir(foldername)
   #xml file will have same name as created folder
   filename = foldername + '.xml'
+  path = os.path.join(foldername, filename)
   bookCount = str(df.shape[0])
   #path = createFolder(foldername)
   root = xml.Element("Books")
@@ -46,22 +45,32 @@ def createXMLFile(df):
     titleEl.text = str(row.title)
     pubYearEl.text = str(row.publicationYear)
     authorEl.text = str(row.author)
+	#call to function to create copies of images
+    createCopyOfImage(str(row.id), foldername)
     #Get complete path to write xml file to
-  completePathName = os.path.join(foldername, filename)
+  #completePathName = os.path.join(foldername, filename)
 
-  with open(completePathName, 'wb') as file:
+  with open(path, 'wb') as file:
     tree.write(file,encoding='utf-8', xml_declaration=True)
-
-def createFolder(folderName):
-  """ 
-  function creates folder to store generated files
-  No longer using this function
-  """
-  #path = os.path.join('/content', folderName)
-  path = os.path.join('//', folderName)
-  #os.mkdir(folderName)
-  os.mkdir(path)
-  return path
+	
+  zipFileDirAndDownload(foldername)
+  
+def createCopyOfImage(id, path):
+  '''
+  creates a copy of image with bookid
+  '''
+  imageName = str(id + 'l0.jpg')
+  pathToFile = os.path.join(path, imageName)
+  shutil.copy('book1.jpg', pathToFile)
+  
+def zipFileDirAndDownload(path):
+  '''
+  Function to zip xml and image files
+  '''
+  print(path)
+  zipFile = shutil.make_archive(path,"zip",path)
+  #completePathName = os.path.join(path, zipFile) 
+  #files.download(completePathName)
 
 def main():
     df = pd.read_csv('books.csv')

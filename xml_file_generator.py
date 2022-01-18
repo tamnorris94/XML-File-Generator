@@ -11,21 +11,22 @@ from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import xml.etree.ElementTree as xml
-from google.colab import files
+#from google.colab import files
 import os
 import shutil
 
-df = pd.read_csv('books.csv')
+
 
 def createXMLFile(df):
   '''
   function generates xml file
   '''
   foldername = datetime.now().strftime("%Y%m%d%H%M%S")
+  os.mkdir(foldername)
   #xml file will have same name as created folder
   filename = foldername + '.xml'
   bookCount = str(df.shape[0])
-  path = createFolder(foldername)
+  #path = createFolder(foldername)
   root = xml.Element("Books")
   root.set('Count', bookCount)
   root.set('Date', datetime.now().strftime("%Y%m%d"))
@@ -46,7 +47,7 @@ def createXMLFile(df):
     pubYearEl.text = str(row.publicationYear)
     authorEl.text = str(row.author)
     #Get complete path to write xml file to
-    completePathName = os.path.join(path, filename)
+  completePathName = os.path.join(foldername, filename)
 
   with open(completePathName, 'wb') as file:
     tree.write(file,encoding='utf-8', xml_declaration=True)
@@ -54,12 +55,16 @@ def createXMLFile(df):
 def createFolder(folderName):
   """ 
   function creates folder to store generated files
+  No longer using this function
   """
-  path = os.path.join('/content', folderName)
+  #path = os.path.join('/content', folderName)
+  path = os.path.join('//', folderName)
+  #os.mkdir(folderName)
   os.mkdir(path)
   return path
 
 def main():
+    df = pd.read_csv('books.csv')
     createXMLFile(df)
 
 if __name__ == "__main__":

@@ -19,11 +19,14 @@ def createXMLFile(df):
   '''
   function generates xml file
   '''
+  parent_dir = "C:\Projects\PythonProjects\XML-File-Generator\CreatedDataFiles"
   foldername = datetime.now().strftime("%Y%m%d%H%M%S")
-  os.mkdir(foldername)
+  path = os.path.join(parent_dir, foldername)
+  
+  os.mkdir(path)
   #xml file will have same name as created folder
   filename = foldername + '.xml'
-  path = os.path.join(foldername, filename)
+  #path = os.path.join(foldername, filename)
   bookCount = str(df.shape[0])
   #path = createFolder(foldername)
   root = xml.Element("Books")
@@ -46,14 +49,14 @@ def createXMLFile(df):
     pubYearEl.text = str(row.publicationYear)
     authorEl.text = str(row.author)
 	#call to function to create copies of images
-    createCopyOfImage(str(row.id), foldername)
+    createCopyOfImage(str(row.id), path)
     #Get complete path to write xml file to
-  #completePathName = os.path.join(foldername, filename)
+  pathToFile = os.path.join(path, filename)
 
-  with open(path, 'wb') as file:
+  with open(pathToFile, 'wb') as file:
     tree.write(file,encoding='utf-8', xml_declaration=True)
 	
-  zipFileDirAndDownload(foldername)
+  zipFileDirAndDownload(path)
   
 def createCopyOfImage(id, path):
   '''
@@ -66,11 +69,11 @@ def createCopyOfImage(id, path):
 def zipFileDirAndDownload(path):
   '''
   Function to zip xml and image files
+  Deletes the original folder after creating zip file
   '''
   print(path)
   zipFile = shutil.make_archive(path,"zip",path)
-  #completePathName = os.path.join(path, zipFile) 
-  #files.download(completePathName)
+  shutil.rmtree(path)
 
 def main():
     df = pd.read_csv('books.csv')
